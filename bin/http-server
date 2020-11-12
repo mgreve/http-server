@@ -18,6 +18,7 @@ if (argv.h || argv.help) {
     'usage: http-server [path] [options]',
     '',
     'options:',
+    '  --csp         Set a csp string - required in this fork',
     '  -p --port    Port to use [8080]',
     '  -a           Address to use [0.0.0.0]',
     '  -d           Show directory listings [true]',
@@ -130,6 +131,11 @@ function listen(port) {
     username: argv.username || process.env.NODE_HTTP_SERVER_USERNAME,
     password: argv.password || process.env.NODE_HTTP_SERVER_PASSWORD
   };
+  if (!argv.csp) {
+      logger.info(colors.red('--csp argument is required. Exiting'));
+      process.exit(1);
+  }
+  options.csp = argv.csp;
 
   if (argv.cors) {
     options.cors = true;
@@ -190,6 +196,7 @@ function listen(port) {
     logger.info('Hit CTRL-C to stop the server');
     if (argv.o) {
       var openUrl = protocol + canonicalHost + ':' + port;
+
       if (typeof argv.o === 'string') {
         openUrl += argv.o[0] === '/' ? argv.o : '/' + argv.o;
       }
